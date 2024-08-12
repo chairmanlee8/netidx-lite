@@ -93,3 +93,4 @@ members = [
     "netidx-derive",
     "netidx-wsproxy"
 ]
+exclude = ["test-harness"]
