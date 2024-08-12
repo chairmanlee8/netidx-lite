@@ -5,5 +5,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1"
-clap = "1"
+clap = "4"
+netidx = { version = "0.26.2", path = "../netidx" }
 tokio = { version = "1", features = ["full"] }

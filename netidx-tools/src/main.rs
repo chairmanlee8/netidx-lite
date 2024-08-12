@@ -1,6 +1,5 @@
 #![recursion_limit = "2048"]
 mod publisher;
-mod record_client;
 mod resolver;
 mod stress_channel_publisher;
 mod stress_channel_subscriber;
@@ -11,14 +10,10 @@ mod wsproxy;
 
 #[cfg(unix)]
 mod activation;
-#[cfg(unix)]
-mod recorder;
 mod resolver_server;
 
 #[macro_use]
 extern crate anyhow;
-#[cfg(unix)]
-use std::path::PathBuf;
 
 use anyhow::Result;
 use netidx_tools_core::ClientParams;
@@ -83,23 +78,6 @@ enum Opt {
         params: subscriber::Params,
     },
     #[cfg(unix)]
-    #[structopt(name = "record", about = "record and republish archives")]
-    Record {
-        #[structopt(short = "c", long = "config", help = "recorder config file")]
-        config: Option<PathBuf>,
-        #[structopt(
-            short = "e",
-            long = "example",
-            help = "print an example config file"
-        )]
-        example: bool,
-    },
-    #[structopt(name = "record-client", about = "control the recorder")]
-    RecordClient {
-        #[structopt(subcommand)]
-        cmd: record_client::Cmd,
-    },
-    #[cfg(unix)]
     #[structopt(name = "activation", about = "manage netidx processes")]
     Activation {
         #[structopt(flatten)]
@@ -145,9 +123,6 @@ async fn tokio_main() -> Result<()> {
             let (cfg, auth) = common.load();
             subscriber::run(cfg, auth, params).await
         }
-        Opt::RecordClient { cmd } => record_client::run(cmd).await,
-        #[cfg(unix)]
-        Opt::Record { config, example } => recorder::run(config, example).await,
         Opt::Stress { cmd } => match cmd {
             Stress::Subscriber { common, params } => {
                 let (cfg, auth) = common.load();
